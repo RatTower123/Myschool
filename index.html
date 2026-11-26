@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Моя школа — Кабинет старосты 7-Б</title>
+<style>
+  :root {
+    --primary: #1a3a6c;
+    --primary-dark: #142c52;
+    --accent: #0077ff;
+    --bg: #f2f4f8;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --green: #dcfce7;
+    --green-text: #166534;
+    --red: #fee2e2;
+    --red-text: #991b1b;
+    --yellow: #fef3c7;
+    --yellow-text: #92400e;
+    --blue: #dbeafe;
+    --blue-text: #1e40af;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+  header {
+    background: var(--primary);
+    color: #fff;
+    height: 58px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .logo-badge { background: var(--accent); padding: 3px 9px; border-radius: 6px; font-size: 12px; }
+  .user-pill { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: #dc2626; color: #fff; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.3); }
+  .user-info { text-align: right; line-height: 1.2; }
+  .user-name { font-size: 13px; font-weight: 600; }
+  .user-role { font-size: 11px; color: #93c5fd; font-weight: 700; }
+
+  .layout { display: flex; flex: 1; }
+  aside {
+    width: 240px;
+    background: var(--primary-dark);
+    color: #cbd5e1;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .school-box {
+    background: rgba(255,255,255,0.08);
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    border-left: 3px solid #facc15;
+  }
+  .school-title { color: #fff; font-weight: 700; font-size: 13px; }
+  .school-sub { color: #94a3b8; font-size: 11px; margin-top: 2px; }
+
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    text-align: left;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.15s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.08); }
+  .nav-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+  main { flex: 1; padding: 20px; overflow-x: auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+  .topbar h1 { font-size: 20px; color: var(--primary); }
+  .sync-bar { display: flex; align-items: center; gap: 8px; background: #fff; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+  .sync-bar input { border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 8px; width: 155px; font-weight: 600; color: var(--primary); font-size: 12px; }
+
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* Рабочий стол */
+  .desk-grid { display: grid; grid-template-columns: 1fr 310px; gap: 18px; align-items: start; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .stat-label { font-size: 12px; color: var(--muted); }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--primary); margin-top: 4px; }
+
+  .clock-card {
+    background: linear-gradient(135deg, #1a3a6c 0%, #2563eb 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .clock-time { font-size: 28px; font-weight: 700; }
+  .clock-date { font-size: 13px; color: #dbeafe; margin-top: 2px; }
+  .cat-icon { font-size: 36px; }
+
+  /* Журнал */
+  .grid-journal { display: grid; grid-template-columns: 1fr 360px; gap: 18px; align-items: start; }
+  @media (max-width: 1080px) {
+    .desk-grid, .grid-journal { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .layout { flex-direction: column; }
+    aside { width: 100%; flex-direction: row; overflow-x: auto; align-items: center; }
+    .school-box { display: none; }
+  }
+
+  .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 16px; }
+  .card-head { padding: 13px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 14px; background: #fafbfc; gap: 8px; flex-wrap: wrap; }
+  .btn { background: var(--accent); color: #fff; border: none; padding: 7px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: #0062d6; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1px solid #cbd5e1; }
+  .btn-outline:hover { background: #f1f5f9; }
+
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { border: 1px solid var(--border); padding: 6px 8px; text-align: center; }
+  th { background: #f8fafc; font-weight: 600; color: #334155; white-space: nowrap; }
+  td.fio { text-align: left; font-weight: 500; white-space: nowrap; min-width: 220px; position: sticky; left: 0; background: #fff; z-index: 2; }
+  th.fio-th { position: sticky; left: 0; z-index: 3; text-align: left; }
+
+  select.m-sel { width: 48px; height: 28px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: 700; text-align: center; cursor: pointer; background: #fff; }
+  .c-plus, .c-5 { background: var(--green) !important; color: var(--green-text) !important; }
+  .c-4 { background: var(--blue) !important; color: var(--blue-text) !important; }
+  .c-3, .c-O, .c-B, .c-U { background: var(--yellow) !important; color: var(--yellow-text) !important; }
+  .c-2, .c-H { background: var(--red) !important; color: var(--red-text) !important; }
+
+  .pill { font-weight: 700; padding: 3px 8px; border-radius: 6px; display: inline-block; font-size: 12px; }
+  .p-good { background: var(--green); color: var(--green-text); }
+  .p-warn { background: var(--yellow); color: var(--yellow-text); }
+  .p-bad { background: var(--red); color: var(--red-text); }
+
+  .form-box { padding: 14px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--border); }
+  .form-box select, .form-box input { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13px; }
+  .rem-list { max-height: 480px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .rem-item { padding: 10px 26px 10px 10px; border-radius: 8px; border: 1px solid var(--border); background: #f9fafb; font-size: 13px; position: relative; }
+  .rem-top { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px; gap: 6px; }
+  .del-btn { position: absolute; right: 8px; top: 10px; background: none; border: none; color: #9ca3af; cursor: pointer; }
+  .del-btn:hover { color: #ef4444; }
+
+  .sched-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; padding: 16px; }
+  .day-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .day-head { background: var(--primary); color: #fff; padding: 8px 12px; font-weight: 700; font-size: 14px; }
+  .l-row { display: flex; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .l-row:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span>моя школа</span>
+    <span class="logo-badge">Кабинет старосты • 7-Б</span>
+  </div>
+  <div class="user-pill">
+    <div class="user-info">
+      <div class="user-name">Зыков Ратибор Вячеславович</div>
+      <div class="user-role">СТАРОСТА • МАОУ «СОШ №2»</div>
+    </div>
+    <div class="avatar">ЗРВ</div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="school-box">
+      <div class="school-title">МАОУ «СОШ №2»</div>
+      <div class="school-sub">7-Б • Кл. рук. Швецова М.Г.</div>
+    </div>
+    <button class="nav-btn active" id="btn-desk" onclick="setTab('desk')">🏠 Рабочий стол</button>
+    <button class="nav-btn" id="btn-journal" onclick="setTab('journal')">📋 Журнал и замечания</button>
+    <button class="nav-btn" id="btn-rating" onclick="setTab('rating')">🏆 Живой рейтинг 7-Б</button>
+    <button class="nav-btn" id="btn-schedule" onclick="setTab('schedule')">📅 Расписание недели</button>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <h1 id="pageHeader">Рабочий стол • 7-Б класс</h1>
+      <div class="sync-bar">
+        <span class="dot" id="syncDot"></span>
+        <span id="syncText">Живая синхронизация:</span>
+        <input id="roomCode" value="7B-SOSH2-2026" onchange="changeRoom()" title="Одинаковый код = общий доступ в реальном времени" />
+        <button class="btn btn-outline" onclick="exportCSV()">📥 Скачать Excel (.csv)</button>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 1: РАБОЧИЙ СТОЛ -->
+    <div id="tab-desk" class="tab active">
+      <div class="stats-row" id="deskStats"></div>
+      <div class="desk-grid">
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <span>Классное руководство • 7-Б класс (Швецова М.Г.)</span>
+              <button class="btn" onclick="setTab('journal')">Открыть журнал →</button>
+            </div>
+            <div style="padding:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+              <div style="border:1px solid var(--border); border-radius:10px; padding:12px;">
+                <div style="font-weight:700; color:var(--primary); margin-bottom:4px;">📋 Журнал посещаемости</div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">Отметки +, Н, О, У и оценки поведения</div>
+                <button class="btn btn-outline" onclick="setTab('journal')">Перейти</button>
+              </div>
+              <div style="border:1px solid var(--border); border-radius:10px; padding:12px;">
+                <div style="font-weight:700; color:var(--primary); margin-bottom:4px;">🏆 Рейтинг дисциплины</div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">Авто-рейтинг за похвалу, дежурство и замечания</div>
+                <button class="btn btn-outline" onclick="setTab('rating')">Смотреть рейтинг</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span>⚡ Последние записи по поведению и дежурству</span></div>
+            <div id="deskRemarks" style="padding:12px;"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="clock-card">
+            <div>
+              <div class="clock-time" id="liveTime">--:--</div>
+              <div class="clock-date" id="liveDate">Загрузка даты...</div>
+            </div>
+            <div class="cat-icon">🐱</div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span>📅 Уроки 7-Б на сегодня</span></div>
+            <div id="todayLessons"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: ЖУРНАЛ -->
+    <div id="tab-journal" class="tab">
+      <div class="grid-journal">
+        <div class="card">
+          <div class="card-head">
+            <span>Журнал 7-Б (24 ученика)</span>
+            <button class="btn" onclick="addDay()">+ Добавить день</button>
+          </div>
+          <div class="tbl-wrap"><table id="jTable"></table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span>⚡ Замечания, похвала и дежурство</span></div>
+          <div class="form-box">
+            <select id="remStudent"></select>
+            <select id="remType">
+              <option value="5">Похвала (+5 б.)</option>
+              <option value="3">Дежурство (+3 б.)</option>
+              <option value="3_help">Помощь классу (+3 б.)</option>
+              <option value="-10">Замечание (-10 б.)</option>
+              <option value="-20">Грубое нарушение (-20 б.)</option>
+            </select>
+            <input type="text" id="remText" placeholder="Предмет или комментарий (например: Физика, полил цветы)" />
+            <button class="btn" onclick="addRemark()">Записать и обновить рейтинг</button>
+          </div>
+          <div class="rem-list" id="remList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: РЕЙТИНГ -->
+    <div id="tab-rating" class="tab">
+      <div class="card">
+        <div class="card-head">
+          <span>🏆 Живой рейтинг дисциплины 7-Б класса (Старт: 100 баллов)</span>
+          <span style="font-size:12px; color:var(--muted);">Похвала +5 • Дежурство +3 • Замечание -10 • Грубое -20</span>
+        </div>
+        <div class="tbl-wrap"><table id="rTable"></table></div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 4: РАСПИСАНИЕ -->
+    <div id="tab-schedule" class="tab">
+      <div class="card">
+        <div class="card-head"><span>📅 Еженедельное расписание 7-Б класса</span></div>
+        <div class="sched-grid" id="schedGrid"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const STUDENTS = [
+  "Бастраков Никита Максимович", "Булгаковская Анастасия", "Ваккер Кирилл Александрович",
+  "Вербах Кирилл Сергеевич", "Войнова Кира Сергеевна", "Воронов Ярослав Михайлович",
+  "Гринько Варвара Алексеевна", "Гриценко Дмитрий Константинович", "Домашова Александра Станиславовна",
+  "Дюкова София Сергеевна", "Жуланова Алиса Евгеньевна", "Зайкова София Денисовна",
+  "Зыков Ратибор Вячеславович", "Каримова Амина Вадимовна", "Колосов Андрей Александрович",
+  "Корнильев Дмитрий", "Митюков Сергей", "Мордвинцева Елизавета Евгеньевна",
+  "Орехов Матвей Антонович", "Остяков Ярослав Андреевич", "Перегудов Александр Иванович",
+  "Ситко Анастасия", "Шевчук Илья", "Шлегель Екатерина Александровна"
+];
+
+const INITIAL_DAYS = ["23", "24", "25", "26"];
+const INITIAL_MARKS = {
+  "0_0":"+","0_1":"+","0_2":"+","0_3":"+",
+  "1_0":"+","1_1":"+","1_2":"+","1_3":"+",
+  "2_0":"+","2_1":"+","2_2":"3","2_3":"+",
+  "3_0":"+","3_1":"+","3_2":"+","3_3":"+",
+  "4_0":"+","4_1":"+","4_2":"+","4_3":"+",
+  "5_0":"+","5_1":"У","5_2":"+","5_3":"+",
+  "6_0":"+","6_1":"+","6_2":"+","6_3":"+",
+  "7_0":"+","7_1":"+","7_2":"5","7_3":"+",
+  "8_0":"+","8_1":"+","8_2":"+","8_3":"+",
+  "9_0":"+","9_1":"+","9_2":"+","9_3":"+",
+  "10_0":"+","10_1":"+","10_2":"+","10_3":"+",
+  "11_0":"+","11_1":"+","11_2":"+","11_3":"+",
+  "12_0":"+","12_1":"+","12_2":"5","12_3":"+",
+  "13_0":"+","13_1":"+","13_2":"+","13_3":"+",
+  "14_0":"+","14_1":"О","14_2":"+","14_3":"+",
+  "15_0":"+","15_1":"+","15_2":"2","15_3":"+",
+  "16_0":"+","16_1":"+","16_2":"+","16_3":"+",
+  "17_0":"+","17_1":"+","17_2":"+","17_3":"+",
+  "18_0":"+","18_1":"+","18_2":"+","18_3":"+",
+  "19_0":"+","19_1":"+","19_2":"+","19_3":"+",
+  "20_0":"+","20_1":"+","20_2":"+","20_3":"+",
+  "21_0":"+","21_1":"+","21_2":"+","21_3":"+",
+  "22_0":"+","22_1":"+","22_2":"+","22_3":"+",
+  "23_0":"+","23_1":"+","23_2":"+","23_3":"+"
+};
+
+const INITIAL_REMARKS = {
+  "init_1": { id: "init_1", sIdx: 12, label: "Похвала", delta: 5, text: "Пришёл после уроков и полил цветы", time: "26.11" },
+  "init_2": { id: "init_2", sIdx: 15, label: "Замечание", delta: -10, text: "Физика • Рекомендуется разговор с кл. рук.", time: "25.11" },
+  "init_3": { id: "init_3", sIdx: 2, label: "Замечание", delta: -10, text: "Биология • Разговоры на уроке", time: "25.11" }
+};
+
+const SCHEDULE = {
+  "Понедельник": [["07:00–07:30","Гр. Математика 7Б (98)"],["08:30–09:10","Классный час 7Б"],["09:20–10:00","География"],["10:15–10:55","Английский язык"],["11:10–11:50","Литература"],["12:00–12:40","Алгебра"],["12:50–13:30","Труд (2 урока)"]],
+  "Вторник": [["08:30–09:10","Читательская грамотность"],["09:20–10:55","Русский язык (2 урока)"],["11:10–11:50","Геометрия"],["12:00–12:40","Физкультура"],["12:50–13:30","Физика"],["13:40–14:20","ИЗО"],["20:00–20:30","Гр. География 7Б (117)"]],
+  "Среда": [["08:30–09:10","История"],["09:20–10:00","Алгебра"],["10:15–10:55","Английский (КР)"],["11:10–11:50","Литература"],["12:00–12:40","Вероятность и статистика"],["12:50–13:30","Информатика"],["13:40–14:20","Биология"],["15:00–15:30","Гр. История 7Б (144)"]],
+  "Четверг": [["07:00–07:30","Гр. Русский 7Б (44)"],["08:30–09:10","Классный час 7Б"],["09:20–10:00","Русский язык"],["10:15–10:55","Физкультура"],["11:10–11:50","Алгебра"],["12:00–12:40","История"],["12:50–13:30","Английский язык"],["13:40–14:20","Физика"],["15:00–15:40","Гр. Физика 7Б (55)"]],
+  "Пятница": [["08:30–09:10","Русский язык"],["09:20–10:00","География"],["10:15–10:55","Практикум по физ. задачам"],["11:10–11:50","Геометрия"],["12:00–12:40","История"],["12:50–13:30","ОФП"]]
+};
+
+let state = {
+  days: [...INITIAL_DAYS],
+  marks: { ...INITIAL_MARKS },
+  remarks: { ...INITIAL_REMARKS }
+};
+
+// Локальное автосохранение + попытка подключения живой P2P-синхронизации Gun.js
+function loadLocal(code) {
+  try {
+    const saved = localStorage.getItem('ms_7b_' + code);
+    if (saved) state = JSON.parse(saved);
+  } catch (e) {}
+}
+function saveLocal(code) {
+  try { localStorage.setItem('ms_7b_' + code, JSON.stringify(state)); } catch (e) {}
+}
+
+let gun = null, roomNode = null;
+function initGun(code) {
+  if (typeof Gun === 'undefined') return;
+  try {
+    if (!gun) gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://peer.wallie.io/gun']);
+    roomNode = gun.get('moyashkola_sosh2_7b_' + code);
+    roomNode.get('days').on(d => {
+      if (d) { try { const p = JSON.parse(d); if (Array.isArray(p)) { state.days = p; saveLocal(code); render(); } } catch(e){} }
+    });
+    roomNode.get('marks').map().on((v, k) => {
+      if (v !== undefined && state.marks[k] !== v) { state.marks[k] = v; saveLocal(code); render(); }
+    });
+    roomNode.get('remarks').map().on((v, k) => {
+      if (v === null && state.remarks[k]) { delete state.remarks[k]; saveLocal(code); render(); }
+      else if (v) { try { state.remarks[k] = JSON.parse(v); saveLocal(code); render(); } catch(e){} }
+    });
+  } catch (e) {}
+}
+
+const sScript = document.createElement('script');
+sScript.src = 'https://cdn.jsdelivr.net/npm/gun/gun.js';
+sScript.onload = () => initGun(document.getElementById('roomCode').value.trim());
+document.head.appendChild(sScript);
+
+function changeRoom() {
+  const code = document.getElementById('roomCode').value.trim() || '7B-SOSH2-2026';
+  state = { days: [...INITIAL_DAYS], marks: { ...INITIAL_MARKS }, remarks: { ...INITIAL_REMARKS } };
+  loadLocal(code);
+  initGun(code);
+  render();
+}
+
+function setMark(sIdx, dIdx, val) {
+  const code = document.getElementById('roomCode').value.trim();
+  const k = sIdx + '_' + dIdx;
+  state.marks[k] = val;
+  saveLocal(code);
+  if (roomNode) roomNode.get('marks').get(k).put(val);
+  render();
+}
+
+function addDay() {
+  const code = document.getElementById('roomCode').value.trim();
+  const def = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+  const d = prompt("Введите дату или номер урока:", def);
+  if (!d) return;
+  state.days.push(d);
+  saveLocal(code);
+  if (roomNode) roomNode.get('days').put(JSON.stringify(state.days));
+  render();
+}
+
+function addRemark() {
+  const code = document.getElementById('roomCode').value.trim();
+  const sIdx = +document.getElementById('remStudent').value;
+  const typeEl = document.getElementById('remType');
+  const rawVal = typeEl.value;
+  const delta = rawVal === '3_help' ? 3 : parseInt(rawVal, 10);
+  const label = typeEl.options[typeEl.selectedIndex].text.split(' (')[0];
+  const text = document.getElementById('remText').value.trim() || label;
+  const id = 'r_' + Date.now();
+  const obj = {
+    id, sIdx, label, delta, text,
+    time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  };
+  state.remarks[id] = obj;
+  saveLocal(code);
+  if (roomNode) roomNode.get('remarks').get(id).put(JSON.stringify(obj));
+  document.getElementById('remText').value = '';
+  render();
+}
+
+function delRemark(id) {
+  const code = document.getElementById('roomCode').value.trim();
+  delete state.remarks[id];
+  saveLocal(code);
+  if (roomNode) roomNode.get('remarks').get(id).put(null);
+  render();
+}
+
+function calculateStats() {
+  return STUDENTS.map((name, idx) => {
+    let score = 100, plus = 0, n = 0, o = 0, rem = 0, praise = 0;
+    state.days.forEach((_, d) => {
+      const m = state.marks[idx + '_' + d] || '';
+      if (m === '+') plus++;
+      if (m === 'Н') { n++; score -= 1; }
+      if (m === 'О') { o++; score -= 2; }
+      if (m === '5') score += 2;
+      if (m === '4') score += 1;
+      if (m === '3') score -= 3;
+      if (m === '2') score -= 8;
+    });
+    Object.values(state.remarks).forEach(r => {
+      if (r && r.sIdx === idx) {
+        score += r.delta;
+        if (r.delta < 0) rem++;
+        if (r.delta > 0) praise++;
+      }
+    });
+    return { idx, name, score, plus, n, o, rem, praise };
+  });
+}
+
+function render() {
+  const stats = calculateStats();
+  const sorted = [...stats].sort((a, b) => b.score - a.score || a.idx - b.idx);
+  const rankMap = {};
+  sorted.forEach((s, i) => rankMap[s.idx] = i + 1);
+
+  // Сводка на рабочем столе
+  const totN = stats.reduce((a, b) => a + b.n, 0);
+  const totO = stats.reduce((a, b) => a + b.o, 0);
+  const avgScore = (stats.reduce((a, b) => a + b.score, 0) / stats.length).toFixed(1);
+  document.getElementById('deskStats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Учеников в 7-Б</div><div class="stat-val">24</div></div>
+    <div class="stat-card"><div class="stat-label">Всего пропусков (Н)</div><div class="stat-val" style="color:#dc2626">${totN}</div></div>
+    <div class="stat-card"><div class="stat-label">Опозданий (О)</div><div class="stat-val" style="color:#d97706">${totO}</div></div>
+    <div class="stat-card"><div class="stat-label">Средний рейтинг</div><div class="stat-val" style="color:#16a34a">${avgScore} б.</div></div>
+  `;
+
+  // Таблица журнала
+  const opts = ['', '+', '5', '4', '3', '2', 'Н', 'О', 'Б', 'У'];
+  document.getElementById('jTable').innerHTML =
+    `<thead><tr><th>№</th><th class="fio-th">ФИО обучающегося</th>${state.days.map(d => `<th>${d}</th>`).join('')}<th>Рейтинг</th><th>Место</th></tr></thead>` +
+    `<tbody>${stats.map(s => {
+      const pc = s.score >= 95 ? 'p-good' : (s.score >= 80 ? 'p-warn' : 'p-bad');
+      const cells = state.days.map((_, d) => {
+        const cur = state.marks[s.idx + '_' + d] || '';
+        const cc = cur === '+' ? 'c-plus' : (cur ? 'c-' + cur : '');
+        return `<td><select class="m-sel ${cc}" onchange="setMark(${s.idx},${d},this.value)">${opts.map(op => `<option value="${op}" ${op === cur ? 'selected' : ''}>${op}</option>`).join('')}</select></td>`;
+      }).join('');
+      return `<tr><td>${s.idx + 1}</td><td class="fio">${s.name}</td>${cells}<td><span class="pill ${pc}">${s.score}</span></td><td><b>${rankMap[s.idx]}</b></td></tr>`;
+    }).join('')}</tbody>`;
+
+  // Список замечаний
+  const rArr = Object.values(state.remarks).filter(Boolean).sort((a, b) => b.id.localeCompare(a.id));
+  const remHtml = rArr.length ? rArr.map(r => `
+    <div class="rem-item">
+      <div class="rem-top">
+        <span>${STUDENTS[r.sIdx]}</span>
+        <span class="pill ${r.delta < 0 ? 'p-bad' : 'p-good'}">${r.label} (${r.delta > 0 ? '+' + r.delta : r.delta} б.)</span>
+      </div>
+      <div style="color:#4b5563">${r.text} <span style="color:#9ca3af;font-size:11px">(${r.time})</span></div>
+      <button class="del-btn" onclick="delRemark('${r.id}')" title="Удалить">✕</button>
+    </div>`).join('') : '<div style="text-align:center;color:#6b7280;padding:16px;">Записей пока нет</div>';
+  document.getElementById('remList').innerHTML = remHtml;
+  document.getElementById('deskRemarks').innerHTML = rArr.slice(0, 4).map(r => `
+    <div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--border);font-size:13px;">
+      <span><b>${STUDENTS[r.sIdx]}</b> — ${r.text}</span>
+      <span class="pill ${r.delta < 0 ? 'p-bad' : 'p-good'}">${r.delta > 0 ? '+' + r.delta : r.delta} б.</span>
+    </div>`).join('') || '<div style="color:#6b7280;font-size:13px;">Записей пока нет</div>';
+
+  // Живой рейтинг
+  document.getElementById('rTable').innerHTML =
+    `<thead><tr><th>Место</th><th class="fio-th">ФИО ученика</th><th>Балл</th><th>Похвал/Деж.</th><th>Замечаний</th><th>Пропусков (Н)</th><th>Статус</th></tr></thead>` +
+    `<tbody>${sorted.map((s, i) => {
+      const pc = s.score >= 95 ? 'p-good' : (s.score >= 80 ? 'p-warn' : 'p-bad');
+      const st = s.score >= 95 ? 'Образцовое поведение' : (s.score >= 80 ? 'Есть замечания' : 'Зона риска • кл. рук.');
+      return `<tr><td><b>${i + 1}</b></td><td class="fio">${s.name}</td><td><span class="pill ${pc}">${s.score} б.</span></td><td>${s.praise}</td><td><b>${s.rem}</b></td><td>${s.n}</td><td>${st}</td></tr>`;
+    }).join('')}</tbody>`;
+}
+
+function setTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+  const titles = {
+    desk: 'Рабочий стол • 7-Б класс',
+    journal: 'Журнал посещаемости и поведения • 7-Б класс',
+    rating: 'Живой рейтинг дисциплины • 7-Б класс',
+    schedule: 'Еженедельное расписание • 7-Б класс'
+  };
+  document.getElementById('pageHeader').textContent = titles[id];
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('liveTime').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('liveDate').textContent = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function exportCSV() {
+  const stats = calculateStats();
+  let csv = "﻿№;ФИО;" + state.days.join(";") + ";Рейтинг
+";
+  stats.forEach(s => {
+    const row = state.days.map((_, d) => state.marks[s.idx + '_' + d] || '');
+    csv += `${s.idx + 1};${s.name};${row.join(";")};${s.score}
+`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Журнал_7Б_МояШкола.csv';
+  a.click();
+}
+
+// Инициализация
+document.getElementById('remStudent').innerHTML = STUDENTS.map((s, i) => `<option value="${i}">${i + 1}. ${s}</option>`).join('');
+document.getElementById('schedGrid').innerHTML = Object.entries(SCHEDULE).map(([d, ls]) =>
+  `<div class="day-card"><div class="day-head">${d}</div>${ls.map(([t, s]) => `<div class="l-row"><span>${s}</span><span style="color:#6b7280;font-size:12px">${t}</span></div>`).join('')}</div>`
+).join('');
+
+const daysRus = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+const todayName = daysRus[new Date().getDay()];
+const todayList = SCHEDULE[todayName] || SCHEDULE["Четверг"];
+document.getElementById('todayLessons').innerHTML = todayList.map(([t, s]) =>
+  `<div class="l-row"><span>${s}</span><span style="color:#6b7280;font-size:12px">${t}</span></div>`
+).join('');
+
+loadLocal(document.getElementById('roomCode').value.trim());
+updateClock();
+setInterval(updateClock, 15000);
+render();
+</script>
+</body>
+</html>
