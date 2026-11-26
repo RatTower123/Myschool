@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Моя школа — Кабинет старосты 7-Б</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: #f2f4f8; color: #1f2937; min-height: 100vh; display: flex; flex-direction: column; }
+  header { background: #1a3a6c; color: #fff; height: 56px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .badge { background: #0077ff; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+  .profile { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .role-tag { background: #3b82f6; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #ef4444; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; }
+
+  .layout { display: flex; flex: 1; }
+  aside { width: 235px; background: #142c52; color: #cbd5e1; padding: 16px 10px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+  .school-box { background: rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; }
+  .school-title { color: #fff; font-weight: 700; font-size: 13px; }
+  .school-sub { color: #93c5fd; font-size: 11px; margin-top: 2px; }
+  .nav-btn { background: transparent; border: none; color: #e2e8f0; text-align: left; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; width: 100%; }
+  .nav-btn:hover { background: rgba(255,255,255,0.1); }
+  .nav-btn.active { background: #0077ff; color: #fff; font-weight: 600; }
+
+  main { flex: 1; padding: 20px; overflow-x: auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+  .topbar h1 { font-size: 20px; color: #1a3a6c; }
+  .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { background: #0077ff; color: #fff; border: none; padding: 8px 14px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: #0062d6; }
+  .btn-outline { background: #fff; color: #1a3a6c; border: 1px solid #cbd5e1; padding: 7px 12px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-outline:hover { background: #f8fafc; }
+
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  .desk-grid { display: grid; grid-template-columns: 1fr 310px; gap: 18px; align-items: start; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 16px; }
+  .card-head { padding: 14px 16px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; background: #fafbfc; }
+  .card-body { padding: 16px; }
+  .sub-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .mini-card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; background: #f8fafc; }
+  .mini-card h3 { font-size: 14px; color: #1a3a6c; margin-bottom: 6px; }
+  .mini-card p { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat-box { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 800; color: #1a3a6c; }
+  .stat-lbl { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+  .clock-widget { background: linear-gradient(135deg, #1a3a6c, #2563eb); color: #fff; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .clock-time { font-size: 28px; font-weight: 800; }
+  .clock-date { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+  .cat-icon { font-size: 38px; }
+
+  .journal-grid { display: grid; grid-template-columns: 1fr 350px; gap: 18px; align-items: start; }
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: center; }
+  th { background: #f8fafc; font-weight: 600; color: #334155; white-space: nowrap; }
+  td.fio { text-align: left; font-weight: 500; white-space: nowrap; min-width: 220px; position: sticky; left: 0; background: #fff; z-index: 2; }
+  th.fio-th { position: sticky; left: 0; z-index: 3; text-align: left; }
+
+  select.m-sel { width: 48px; height: 28px; border-radius: 5px; border: 1px solid #cbd5e1; font-weight: 700; text-align: center; cursor: pointer; }
+  .c-plus, .c-5 { background: #dcfce7; color: #166534; }
+  .c-4 { background: #dbeafe; color: #1e40af; }
+  .c-3, .c-O, .c-B, .c-U { background: #fef3c7; color: #92400e; }
+  .c-2, .c-H { background: #fee2e2; color: #991b1b; }
+
+  .pill { font-weight: 700; padding: 3px 8px; border-radius: 6px; display: inline-block; }
+  .p-good { background: #dcfce7; color: #166534; }
+  .p-warn { background: #fef3c7; color: #92400e; }
+  .p-bad { background: #fee2e2; color: #991b1b; }
+
+  .form-box { padding: 14px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #e5e7eb; }
+  .form-box select, .form-box input { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13px; }
+  .rem-list { max-height: 500px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .rem-item { padding: 10px 28px 10px 10px; border-radius: 8px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 13px; position: relative; }
+  .rem-top { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px; gap: 6px; }
+  .del-btn { position: absolute; right: 8px; top: 10px; background: none; border: none; color: #9ca3af; cursor: pointer; font-weight: 700; }
+  .del-btn:hover { color: #ef4444; }
+
+  .sched-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; padding: 16px; }
+  .day-card { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; }
+  .day-head { background: #1a3a6c; color: #fff; padding: 8px 12px; font-weight: 700; font-size: 14px; }
+  .l-row { display: flex; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+  @media (max-width: 1050px) { .desk-grid, .journal-grid, .sub-cards { grid-template-columns: 1fr; } .layout { flex-direction: column; } aside { width: 100%; flex-direction: row; overflow-x: auto; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span>моя школа</span>
+    <span class="badge">Кабинет старосты 7-Б</span>
+  </div>
+  <div class="profile">
+    <span>Зыков Ратибор Вячеславович</span>
+    <span class="role-tag">СТАРОСТА</span>
+    <div class="avatar">ЗРВ</div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="school-box">
+      <div class="school-title">🏫 МАОУ «СОШ №2»</div>
+      <div class="school-sub">Кл. рук. Швецова М.Г. • 7-Б</div>
+    </div>
+    <button type="button" class="nav-btn active" data-tab="desk">🏠 Рабочий стол</button>
+    <button type="button" class="nav-btn" data-tab="journal">📋 Журнал и замечания</button>
+    <button type="button" class="nav-btn" data-tab="rating">🏆 Живой рейтинг 7-Б</button>
+    <button type="button" class="nav-btn" data-tab="schedule">📅 Расписание недели</button>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <h1 id="pageTitle">Рабочий стол • 7-Б класс</h1>
+      <div class="top-actions">
+        <button type="button" class="btn-outline" id="btnShare">📤 Перенести данные</button>
+        <button type="button" class="btn-outline" id="btnExport">📥 Скачать Excel (.csv)</button>
+        <button type="button" class="btn-outline" id="btnReset">🔄 Сброс</button>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 1: РАБОЧИЙ СТОЛ -->
+    <div id="tab-desk" class="tab active">
+      <div class="desk-grid">
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <span>Классное руководство • 7-Б класс (Швецова М.Г.)</span>
+              <span class="badge">Активный класс</span>
+            </div>
+            <div class="card-body">
+              <div class="sub-cards">
+                <div class="mini-card">
+                  <h3>📋 Журнал посещаемости и поведения</h3>
+                  <p>Отметки +, Н, О, оценки поведения и реестр замечаний</p>
+                  <button type="button" class="btn" data-goto="journal">Перейти в журнал</button>
+                </div>
+                <div class="mini-card">
+                  <h3>🏆 Рейтинг дисциплины класса</h3>
+                  <p>Автоматическое место каждого ученика с 1 по 24</p>
+                  <button type="button" class="btn" data-goto="rating">Открыть рейтинг</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span>📊 Оперативная сводка 7-Б класса</span></div>
+            <div class="card-body">
+              <div class="stat-row" id="deskStats"></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="clock-widget">
+            <div>
+              <div class="clock-time" id="clockTime">--:--</div>
+              <div class="clock-date" id="clockDate">Загрузка даты...</div>
+            </div>
+            <div class="cat-icon">🐱</div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span>📅 Уроки 7-Б на сегодня</span></div>
+            <div class="card-body" id="todayLessons"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: ЖУРНАЛ -->
+    <div id="tab-journal" class="tab">
+      <div class="journal-grid">
+        <div class="card">
+          <div class="card-head">
+            <span>Список учащихся 7-Б (24 ученика)</span>
+            <button type="button" class="btn" id="btnAddDay">+ Добавить день</button>
+          </div>
+          <div class="tbl-wrap">
+            <table id="jTable"></table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span>⚡ Замечания, дежурство и похвалы</span></div>
+          <div class="form-box">
+            <select id="remStudent"></select>
+            <select id="remType">
+              <option value="5">Похвала (+5 б.)</option>
+              <option value="3">Дежурство / Помощь классу (+3 б.)</option>
+              <option value="-10">Замечание (-10 б.)</option>
+              <option value="-20">Грубое нарушение (-20 б.)</option>
+            </select>
+            <input type="text" id="remText" placeholder="Комментарий (предмет, причина)" />
+            <button type="button" class="btn" id="btnAddRem">Записать и обновить рейтинг</button>
+          </div>
+          <div class="rem-list" id="remList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: РЕЙТИНГ -->
+    <div id="tab-rating" class="tab">
+      <div class="card">
+        <div class="card-head">
+          <span>🏆 Живой рейтинг дисциплины 7-Б класса (Старт: 100 баллов)</span>
+        </div>
+        <div class="tbl-wrap">
+          <table id="rTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 4: РАСПИСАНИЕ -->
+    <div id="tab-schedule" class="tab">
+      <div class="card">
+        <div class="card-head"><span>📅 Постоянное расписание уроков 7-Б класса</span></div>
+        <div class="sched-grid" id="schedGrid"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function() {
+  var STUDENTS = [
+    "Бастраков Никита Максимович", "Булгаковская Анастасия", "Буракова Милана Антоновна",
+    "Ваккер Кирилл Александрович", "Вербах Кирилл Сергеевич", "Войнова Кира Сергеевна",
+    "Воронов Ярослав Михайлович", "Гринько Варвара Алексеевна", "Гриценко Дмитрий Константинович",
+    "Домашова Александра Станиславовна", "Дюкова София Сергеевна", "Жуланова Алиса Евгеньевна",
+    "Зыков Ратибор Вячеславович", "Кандыбаев Эмиль Русланович", "Каримова Амина Вадимовна",
+    "Колосов Андрей Александрович", "Корнильев Дмитрий", "Косилова Полина Евгеньевна",
+    "Митюков Сергей", "Мордвинцева Елизавета Евгеньевна", "Орехов Матвей Антонович",
+    "Ситко Анастасия", "Шевчук Илья", "Шлегель Екатерина Александровна"
+  ];
+
+  var DEFAULT_DAYS = ["23", "24", "25", "26", "27", "30", "1", "2"];
+  var DEFAULT_MARKS = {
+    "0_0":"+","0_1":"+","0_2":"+","0_3":"+",
+    "1_0":"+","1_1":"+","1_2":"+","1_3":"+",
+    "2_0":"+","2_1":"+","2_2":"У","2_3":"+",
+    "3_0":"+","3_1":"+","3_2":"+","3_3":"+",
+    "4_0":"+","4_1":"+","4_2":"+","4_3":"5",
+    "5_0":"+","5_1":"+","5_2":"+","5_3":"+",
+    "6_0":"+","6_1":"+","6_2":"3","6_3":"+",
+    "7_0":"+","7_1":"+","7_2":"+","7_3":"+",
+    "8_0":"+","8_1":"+","8_2":"+","8_3":"+",
+    "9_0":"+","9_1":"+","9_2":"+","9_3":"+",
+    "10_0":"+","10_1":"+","10_2":"+","10_3":"+",
+    "11_0":"+","11_1":"+","11_2":"+","11_3":"+",
+    "12_0":"+","12_1":"+","12_2":"5","12_3":"5",
+    "13_0":"+","13_1":"+","13_2":"+","13_3":"+",
+    "14_0":"+","14_1":"+","14_2":"+","14_3":"+",
+    "15_0":"+","15_1":"+","15_2":"+","15_3":"+",
+    "16_0":"+","16_1":"+","16_2":"2","16_3":"О",
+    "17_0":"+","17_1":"+","17_2":"+","17_3":"+",
+    "18_0":"+","18_1":"+","18_2":"+","18_3":"+",
+    "19_0":"+","19_1":"Н","19_2":"+","19_3":"+",
+    "20_0":"+","20_1":"+","20_2":"+","20_3":"+",
+    "21_0":"+","21_1":"+","21_2":"+","21_3":"+",
+    "22_0":"+","22_1":"+","22_2":"+","22_3":"+",
+    "23_0":"+","23_1":"+","23_2":"+","23_3":"+"
+  };
+
+  var DEFAULT_REMARKS = [
+    { id: "r1", sIdx: 12, delta: 5, label: "Похвала", text: "Пришёл после уроков и полил цветы", time: "26.11" },
+    { id: "r2", sIdx: 16, delta: -10, label: "Замечание", text: "Физика — нарушение дисциплины", time: "25.11" },
+    { id: "r3", sIdx: 6, delta: -10, label: "Замечание", text: "История — разговоры на уроке", time: "25.11" }
+  ];
+
+  var SCHEDULE = {
+    "Понедельник": [["07:00–07:30","Гр. Математика 7Б (98)"],["08:30–09:10","Классный час 7Б"],["09:20–10:00","География"],["10:15–10:55","Английский язык"],["11:10–11:50","Литература"],["12:00–12:40","Алгебра"],["12:50–13:30","Труд (2 урока)"]],
+    "Вторник": [["08:30–09:10","Читательская грамотность"],["09:20–10:55","Русский язык (2 урока)"],["11:10–11:50","Геометрия"],["12:00–12:40","Физкультура"],["12:50–13:30","Физика"],["13:40–14:20","ИЗО"],["20:00–20:30","Гр. География 7Б (117)"]],
+    "Среда": [["08:30–09:10","История"],["09:20–10:00","Алгебра"],["10:15–10:55","Английский (КР)"],["11:10–11:50","Литература"],["12:00–12:40","Вероятность и статистика"],["12:50–13:30","Информатика"],["13:40–14:20","Биология"],["15:00–15:30","Гр. История 7Б (144)"]],
+    "Четверг": [["07:00–07:30","Гр. Русский 7Б (44)"],["08:30–09:10","Классный час 7Б"],["09:20–10:00","Русский язык"],["10:15–10:55","Физкультура"],["11:10–11:50","Алгебра"],["12:00–12:40","История"],["12:50–13:30","Английский язык"],["13:40–14:20","Физика"],["15:00–15:40","Гр. Физика 7Б (55)"]],
+    "Пятница": [["08:30–09:10","Русский язык"],["09:20–10:00","География"],["10:15–10:55","Практикум по физ. задачам"],["11:10–11:50","Геометрия"],["12:00–12:40","История"],["12:50–13:30","ОФП"]]
+  };
+
+  var STORAGE_KEY = "starosta_7b_sosh2_v3";
+  var state = null;
+
+  function loadState() {
+    try {
+      var hash = window.location.hash;
+      if (hash && hash.indexOf("#data=") === 0) {
+        var decoded = decodeURIComponent(escape(atob(hash.slice(6))));
+        state = JSON.parse(decoded);
+        saveState();
+        history.replaceState(null, "", window.location.pathname);
+        return;
+      }
+      var saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        state = JSON.parse(saved);
+        return;
+      }
+    } catch (e) {}
+    state = {
+      days: DEFAULT_DAYS.slice(),
+      marks: JSON.parse(JSON.stringify(DEFAULT_MARKS)),
+      remarks: JSON.parse(JSON.stringify(DEFAULT_REMARKS))
+    };
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  function switchTab(tabId) {
+    var tabs = document.querySelectorAll(".tab");
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove("active");
+    }
+    var btns = document.querySelectorAll(".nav-btn");
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].classList.remove("active");
+      if (btns[j].getAttribute("data-tab") === tabId) {
+        btns[j].classList.add("active");
+      }
+    }
+    var target = document.getElementById("tab-" + tabId);
+    if (target) target.classList.add("active");
+
+    var titles = {
+      desk: "Рабочий стол • 7-Б класс",
+      journal: "Журнал посещаемости и замечаний • 7-Б",
+      rating: "Живой рейтинг поведения • 7-Б",
+      schedule: "Расписание недели • 7-Б"
+    };
+    document.getElementById("pageTitle").textContent = titles[tabId] || "Кабинет старосты";
+  }
+
+  function calcStats() {
+    var list = [];
+    for (var idx = 0; idx < STUDENTS.length; idx++) {
+      var score = 100, plus = 0, n = 0, o = 0, rem = 0;
+      for (var d = 0; d < state.days.length; d++) {
+        var m = state.marks[idx + "_" + d] || "";
+        if (m === "+") plus++;
+        if (m === "Н") { n++; score -= 1; }
+        if (m === "О") { o++; score -= 2; }
+        if (m === "5") score += 2;
+        if (m === "4") score += 1;
+        if (m === "3") score -= 3;
+        if (m === "2") score -= 8;
+      }
+      for (var r = 0; r < state.remarks.length; r++) {
+        var item = state.remarks[r];
+        if (item && item.sIdx === idx) {
+          score += item.delta;
+          if (item.delta < 0) rem++;
+        }
+      }
+      list.push({ idx: idx, name: STUDENTS[idx], score: score, plus: plus, n: n, o: o, rem: rem });
+    }
+    return list;
+  }
+
+  function renderAll() {
+    var stats = calcStats();
+    var sorted = stats.slice().sort(function(a, b) {
+      return (b.score - a.score) || (a.idx - b.idx);
+    });
+    var rankMap = {};
+    for (var i = 0; i < sorted.length; i++) {
+      rankMap[sorted[i].idx] = i + 1;
+    }
+
+    // Сводка на рабочем столе
+    var totalN = 0, totalO = 0, sumScore = 0;
+    for (var s = 0; s < stats.length; s++) {
+      totalN += stats[s].n;
+      totalO += stats[s].o;
+      sumScore += stats[s].score;
+    }
+    var avgScore = (sumScore / stats.length).toFixed(1);
+    document.getElementById("deskStats").innerHTML =
+      '<div class="stat-box"><div class="stat-num">' + STUDENTS.length + '</div><div class="stat-lbl">Учеников в классе</div></div>' +
+      '<div class="stat-box"><div class="stat-num">' + totalN + '</div><div class="stat-lbl">Всего пропусков (Н)</div></div>' +
+      '<div class="stat-box"><div class="stat-num">' + totalO + '</div><div class="stat-lbl">Опозданий (О)</div></div>' +
+      '<div class="stat-box"><div class="stat-num">' + avgScore + '</div><div class="stat-lbl">Ср. балл рейтинга</div></div>';
+
+    // Таблица журнала
+    var headHtml = '<thead><tr><th>№</th><th class="fio-th">ФИО обучающегося</th>';
+    for (var d = 0; d < state.days.length; d++) {
+      headHtml += '<th>' + state.days[d] + '</th>';
+    }
+    headHtml += '<th>Рейтинг</th><th>Место</th></tr></thead>';
+
+    var opts = ["", "+", "5", "4", "3", "2", "Н", "О", "Б", "У"];
+    var bodyHtml = '<tbody>';
+    for (var u = 0; u < stats.length; u++) {
+      var st = stats[u];
+      var pc = st.score >= 95 ? "p-good" : (st.score >= 80 ? "p-warn" : "p-bad");
+      bodyHtml += '<tr><td>' + (st.idx + 1) + '</td><td class="fio">' + st.name + '</td>';
+      for (var c = 0; c < state.days.length; c++) {
+        var cur = state.marks[st.idx + "_" + c] || "";
+        var cc = cur === "+" ? "c-plus" : (cur ? "c-" + cur : "");
+        bodyHtml += '<td><select class="m-sel ' + cc + '" data-s="' + st.idx + '" data-d="' + c + '">';
+        for (var o = 0; o < opts.length; o++) {
+          var selAttr = (opts[o] === cur) ? " selected" : "";
+          bodyHtml += '<option value="' + opts[o] + '"' + selAttr + '>' + opts[o] + '</option>';
+        }
+        bodyHtml += '</select></td>';
+      }
+      bodyHtml += '<td><span class="pill ' + pc + '">' + st.score + '</span></td><td><b>' + rankMap[st.idx] + '</b></td></tr>';
+    }
+    bodyHtml += '</tbody>';
+    document.getElementById("jTable").innerHTML = headHtml + bodyHtml;
+
+    // Список замечаний
+    var remHtml = "";
+    if (state.remarks.length === 0) {
+      remHtml = '<div style="text-align:center;color:#6b7280;padding:20px;font-size:13px;">Записей пока нет.</div>';
+    } else {
+      for (var k = state.remarks.length - 1; k >= 0; k--) {
+        var rm = state.remarks[k];
+        var tagCls = rm.delta < 0 ? "p-bad" : "p-good";
+        var deltaTxt = rm.delta > 0 ? ("+" + rm.delta) : rm.delta;
+        remHtml += '<div class="rem-item">' +
+          '<div class="rem-top"><span>' + STUDENTS[rm.sIdx] + '</span><span class="pill ' + tagCls + '">' + deltaTxt + ' б.</span></div>' +
+          '<div style="color:#4b5563;">' + rm.text + ' <span style="color:#9ca3af;font-size:11px;">(' + rm.time + ')</span></div>' +
+          '<button type="button" class="del-btn" data-del="' + rm.id + '" title="Удалить">✕</button>' +
+          '</div>';
+      }
+    }
+    document.getElementById("remList").innerHTML = remHtml;
+
+    // Таблица рейтинга
+    var rHtml = '<thead><tr><th>Место</th><th class="fio-th">ФИО ученика</th><th>Балл</th><th>Присутствий (+)</th><th>Пропусков (Н)</th><th>Опозданий (О)</th><th>Замечаний</th><th>Статус</th></tr></thead><tbody>';
+    for (var m = 0; m < sorted.length; m++) {
+      var item = sorted[m];
+      var rCls = item.score >= 95 ? "p-good" : (item.score >= 80 ? "p-warn" : "p-bad");
+      var statusTxt = item.score >= 95 ? "Образцовое поведение" : (item.score >= 80 ? "Есть замечания" : "Зона риска • кл. рук.");
+      rHtml += '<tr><td><b>' + (m + 1) + '</b></td><td class="fio">' + item.name + '</td>' +
+        '<td><span class="pill ' + rCls + '">' + item.score + ' б.</span></td>' +
+        '<td>' + item.plus + '</td><td>' + item.n + '</td><td>' + item.o + '</td>' +
+        '<td><b>' + item.rem + '</b></td><td>' + statusTxt + '</td></tr>';
+    }
+    rHtml += '</tbody>';
+    document.getElementById("rTable").innerHTML = rHtml;
+  }
+
+  function updateClock() {
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2, "0");
+    var mm = String(now.getMinutes()).padStart(2, "0");
+    document.getElementById("clockTime").textContent = hh + ":" + mm;
+    var daysRu = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+    var monthsRu = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    document.getElementById("clockDate").textContent = daysRu[now.getDay()] + ", " + now.getDate() + " " + monthsRu[now.getMonth()];
+  }
+
+  // Инициализация
+  loadState();
+
+  var selHtml = "";
+  for (var i = 0; i < STUDENTS.length; i++) {
+    selHtml += '<option value="' + i + '">' + (i + 1) + '. ' + STUDENTS[i] + '</option>';
+  }
+  document.getElementById("remStudent").innerHTML = selHtml;
+
+  var schedHtml = "";
+  var dayKeys = Object.keys(SCHEDULE);
+  for (var d = 0; d < dayKeys.length; d++) {
+    var dName = dayKeys[d];
+    var lessons = SCHEDULE[dName];
+    schedHtml += '<div class="day-card"><div class="day-head">' + dName + '</div>';
+    for (var l = 0; l < lessons.length; l++) {
+      schedHtml += '<div class="l-row"><span>' + lessons[l][1] + '</span><span style="color:#6b7280;font-size:12px;">' + lessons[l][0] + '</span></div>';
+    }
+    schedHtml += '</div>';
+  }
+  document.getElementById("schedGrid").innerHTML = schedHtml;
+
+  var todayIdx = new Date().getDay();
+  var mapDay = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница" };
+  var curDayName = mapDay[todayIdx] || "Четверг";
+  var todayList = SCHEDULE[curDayName] || [];
+  var todayHtml = '<div style="font-size:12px;color:#6b7280;margin-bottom:8px;">Расписание: <b>' + curDayName + '</b></div>';
+  for (var t = 0; t < todayList.length; t++) {
+    todayHtml += '<div class="l-row" style="padding:5px 0;"><span>' + todayList[t][1] + '</span><span style="color:#6b7280;font-size:12px;">' + todayList[t][0] + '</span></div>';
+  }
+  document.getElementById("todayLessons").innerHTML = todayHtml;
+
+  // Единый обработчик кликов по всему документу
+  document.addEventListener("click", function(e) {
+    var tabBtn = e.target.closest("[data-tab]");
+    if (tabBtn) {
+      switchTab(tabBtn.getAttribute("data-tab"));
+      return;
+    }
+    var gotoBtn = e.target.closest("[data-goto]");
+    if (gotoBtn) {
+      switchTab(gotoBtn.getAttribute("data-goto"));
+      return;
+    }
+    if (e.target.id === "btnAddDay") {
+      var dt = new Date();
+      var defStr = String(dt.getDate()).padStart(2, "0") + "." + String(dt.getMonth() + 1).padStart(2, "0");
+      var name = prompt("Введите дату или название столбца:", defStr);
+      if (name && name.trim()) {
+        state.days.push(name.trim());
+        saveState();
+        renderAll();
+      }
+      return;
+    }
+    if (e.target.id === "btnAddRem") {
+      var sIdx = parseInt(document.getElementById("remStudent").value, 10);
+      var typeSel = document.getElementById("remType");
+      var delta = parseInt(typeSel.value, 10);
+      var lbl = typeSel.options[typeSel.selectedIndex].text;
+      var txt = document.getElementById("remText").value.trim() || lbl;
+      var now = new Date();
+      var timeStr = String(now.getDate()).padStart(2, "0") + "." + String(now.getMonth() + 1).padStart(2, "0");
+      state.remarks.push({
+        id: "r_" + Date.now(),
+        sIdx: sIdx,
+        delta: delta,
+        label: lbl,
+        text: txt,
+        time: timeStr
+      });
+      document.getElementById("remText").value = "";
+      saveState();
+      renderAll();
+      return;
+    }
+    var delBtn = e.target.closest("[data-del]");
+    if (delBtn) {
+      var delId = delBtn.getAttribute("data-del");
+      state.remarks = state.remarks.filter(function(x) { return x.id !== delId; });
+      saveState();
+      renderAll();
+      return;
+    }
+    if (e.target.id === "btnExport") {
+      var stats = calcStats();
+      var csv = "﻿№;ФИО;" + state.days.join(";") + ";Рейтинг
+";
+      for (var i = 0; i < stats.length; i++) {
+        var row = [i + 1, stats[i].name];
+        for (var d = 0; d < state.days.length; d++) {
+          row.push(state.marks[i + "_" + d] || "");
+        }
+        row.push(stats[i].score);
+        csv += row.join(";") + "
+";
+      }
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Zhurnal_7B.csv";
+      a.click();
+      return;
+    }
+    if (e.target.id === "btnShare") {
+      var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+      var url = window.location.origin + window.location.pathname + "#data=" + encoded;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url);
+        alert("Ссылка с актуальными оценками и замечаниями скопирована! Отправьте её помощникам.");
+      } else {
+        prompt("Скопируйте ссылку для помощников:", url);
+      }
+      return;
+    }
+    if (e.target.id === "btnReset") {
+      if (confirm("Сбросить все новые изменения к исходным данным?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        loadState();
+        renderAll();
+      }
+    }
+  });
+
+  document.addEventListener("change", function(e) {
+    if (e.target.classList.contains("m-sel")) {
+      var s = e.target.getAttribute("data-s");
+      var d = e.target.getAttribute("data-d");
+      state.marks[s + "_" + d] = e.target.value;
+      saveState();
+      renderAll();
+    }
+  });
+
+  renderAll();
+  updateClock();
+  setInterval(updateClock, 15000);
+})();
+</script>
+</body>
+</html>
